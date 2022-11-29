@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { CardElement, useStripe, useElements} from '@stripe/react-stripe-js';
 import { StripeCardElement } from '@stripe/stripe-js';
 import { useSelector } from 'react-redux';
 
@@ -45,9 +45,11 @@ const PaymentForm = () => {
     const {
       paymentIntent: { client_secret },
     } = response;
-
+    
+    console.log(client_secret);
+    
     const cardDetails = elements.getElement(CardElement);
-
+    
     if (!ifValidCardElement(cardDetails)) return;
 
     const paymentResult = await stripe.confirmCardPayment(client_secret, {
@@ -55,14 +57,14 @@ const PaymentForm = () => {
         card: cardDetails,
         billing_details: {
           name: currentUser ? currentUser.displayName : 'Guest',
-        },
-      },
+        }
+      }
     });
 
     setIsProcessingPayment(false);
 
     if (paymentResult.error) {
-      alert(paymentResult.error);
+      alert(paymentResult.error.message);
     } else {
       if (paymentResult.paymentIntent.status === 'succeeded') {
         alert('Payment Successful');
